@@ -71,3 +71,7 @@ swift build && swift test
 .build/debug/GitAccountSwitch status   # run as CLI
 swift scripts/make-icon.swift     # regenerate Resources/AppIcon.icns
 ```
+
+## License
+
+MIT © 2026 Snowy Fox SRL. See [LICENSE](LICENSE).
