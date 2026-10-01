@@ -21,7 +21,13 @@ final class AppState: ObservableObject {
     init() {
         config = ConfigStore.load(paths)
         if let exe = Bundle.main.executablePath {
-            attempt { try Writer.linkCLI(executable: exe, paths: paths) }
+            // A quarantined app opened outside Applications runs from a temporary copy that
+            // disappears on quit, so linking to it would break git's credential helper.
+            if exe.contains("/AppTranslocation/") {
+                fail("Move GitAccountSwitch to your Applications folder and open it from there.")
+            } else {
+                attempt { try Writer.linkCLI(executable: exe, paths: paths) }
+            }
         }
         attempt { try Writer.apply(config, paths: paths) }
         if shell.isInLegacyLocation { attempt { try shell.install() } }
