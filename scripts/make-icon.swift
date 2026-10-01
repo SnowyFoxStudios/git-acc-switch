@@ -1,4 +1,5 @@
 // Draws the app icon and writes Resources/AppIcon.icns. Run with: swift scripts/make-icon.swift
+// Drawn from plain shapes only: SF Symbols may not be used in app icons.
 import AppKit
 
 let canvas: CGFloat = 1024
@@ -36,21 +37,62 @@ func drawIcon(size: CGFloat) -> NSBitmapImageRep {
                            end: CGPoint(x: tile.maxX, y: tile.minY), options: [])
     ctx.restoreGState()
 
-    // Switch arrows around a person: "change account".
-    symbol("arrow.triangle.2.circlepath", pointSize: 560, alpha: 0.95, center: CGPoint(x: 512, y: 512))
-    symbol("person.fill", pointSize: 230, alpha: 1, center: CGPoint(x: 512, y: 506))
+    // Two overlapping accounts above a swap arrow.
+    let ink = NSColor(srgbRed: 0.30, green: 0.20, blue: 0.68, alpha: 1).cgColor
+    let back = (center: CGPoint(x: 612, y: 612), radius: CGFloat(150))
+    let front = (center: CGPoint(x: 420, y: 566), radius: CGFloat(178))
+
+    // The back account, with a gap cut around the front one so they read as separate.
+    ctx.saveGState()
+    ctx.addEllipse(in: circle(back.center, back.radius))
+    ctx.addEllipse(in: circle(front.center, front.radius + 22))
+    ctx.clip(using: .evenOdd)
+    avatar(ctx, back.center, back.radius, disc: NSColor.white.withAlphaComponent(0.55).cgColor,
+           person: ink.copy(alpha: 0.75)!)
+    ctx.restoreGState()
+    avatar(ctx, front.center, front.radius, disc: NSColor.white.cgColor, person: ink)
+
+    // ⇄ below them.
+    ctx.setStrokeColor(NSColor.white.cgColor)
+    ctx.setFillColor(NSColor.white.cgColor)
+    arrow(ctx, from: CGPoint(x: 330, y: 318), to: CGPoint(x: 700, y: 318))
+    arrow(ctx, from: CGPoint(x: 694, y: 222), to: CGPoint(x: 324, y: 222))
 
     NSGraphicsContext.restoreGraphicsState()
     return rep
 }
 
-func symbol(_ name: String, pointSize: CGFloat, alpha: CGFloat, center: CGPoint) {
-    let config = NSImage.SymbolConfiguration(pointSize: pointSize, weight: .semibold)
-        .applying(.init(paletteColors: [NSColor.white.withAlphaComponent(alpha)]))
-    guard let image = NSImage(systemSymbolName: name, accessibilityDescription: nil)?
-        .withSymbolConfiguration(config) else { fatalError("missing symbol \(name)") }
-    let s = image.size
-    image.draw(in: CGRect(x: center.x - s.width / 2, y: center.y - s.height / 2, width: s.width, height: s.height))
+func circle(_ c: CGPoint, _ r: CGFloat) -> CGRect {
+    CGRect(x: c.x - r, y: c.y - r, width: r * 2, height: r * 2)
+}
+
+/// A disc with a head-and-shoulders silhouette inside it.
+func avatar(_ ctx: CGContext, _ c: CGPoint, _ r: CGFloat, disc: CGColor, person: CGColor) {
+    ctx.saveGState()
+    ctx.addEllipse(in: circle(c, r))
+    ctx.clip()
+    ctx.setFillColor(disc)
+    ctx.fill(circle(c, r))
+    ctx.setFillColor(person)
+    ctx.fillEllipse(in: circle(CGPoint(x: c.x, y: c.y + r * 0.22), r * 0.30))
+    ctx.fillEllipse(in: CGRect(x: c.x - r * 0.62, y: c.y - r * 1.02, width: r * 1.24, height: r * 0.92))
+    ctx.restoreGState()
+}
+
+/// A thick line with a triangular head at `to`.
+func arrow(_ ctx: CGContext, from: CGPoint, to: CGPoint) {
+    let dir: CGFloat = to.x > from.x ? 1 : -1
+    let head: CGFloat = 70
+    ctx.setLineWidth(40)
+    ctx.setLineCap(.round)
+    ctx.move(to: from)
+    ctx.addLine(to: CGPoint(x: to.x - dir * head * 0.6, y: to.y))
+    ctx.strokePath()
+    ctx.move(to: to)
+    ctx.addLine(to: CGPoint(x: to.x - dir * head, y: to.y + head * 0.72))
+    ctx.addLine(to: CGPoint(x: to.x - dir * head, y: to.y - head * 0.72))
+    ctx.closePath()
+    ctx.fillPath()
 }
 
 let root = URL(fileURLWithPath: CommandLine.arguments[0]).deletingLastPathComponent().deletingLastPathComponent()
