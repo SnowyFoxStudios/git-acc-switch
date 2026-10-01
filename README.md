@@ -87,6 +87,10 @@ git tag v0.1.0 && git push origin v0.1.0
 
 The workflow writes the tag's version into the app, then creates the GitHub Release with `GitAccountSwitch-<version>.zip` and its SHA-256 checksum.
 
+## Feedback & security
+
+Found a bug or have an idea? [Open an issue](https://github.com/SnowyFoxStudios/git-acc-switch/issues/new/choose). Security problems go through [private vulnerability reporting](https://github.com/SnowyFoxStudios/git-acc-switch/security/advisories/new) instead; see [SECURITY.md](SECURITY.md).
+
 ## License
 
 MIT © 2026 Snowy Fox SRL. See [LICENSE](LICENSE).

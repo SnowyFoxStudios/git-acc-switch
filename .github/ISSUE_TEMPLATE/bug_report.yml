@@ -1,0 +1,45 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Never paste tokens, `~/.config/gh/hosts.yml` or other secrets here.**
+        For security problems, use [Report a vulnerability](https://github.com/SnowyFoxStudios/git-acc-switch/security/advisories/new) instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Add a folder rule for ~/Work → Work account
+        2. Run `git push` in a repo inside it
+        3. ...
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Finder → GitAccountSwitch → Get Info
+      placeholder: "0.1.1"
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: "15.5"
+    validations:
+      required: true
+  - type: textarea
+    id: status
+    attributes:
+      label: Output of `gh-acc-switch status` in the affected folder
+      description: Shows account labels, GitHub logins and commit emails; remove anything you don't want public.
+      render: text
