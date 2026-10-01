@@ -43,6 +43,9 @@ public struct AppConfig: Codable, Equatable {
     public var activeAccountId: UUID?
     /// Overrides gh auto-detection.
     public var ghPath: String?
+    /// Set when the user turns the shell integration off, so folder rules don't turn it back on.
+    /// Optional so config files written before this existed still decode.
+    public var shellIntegrationDisabled: Bool?
 
     public init() {}
 

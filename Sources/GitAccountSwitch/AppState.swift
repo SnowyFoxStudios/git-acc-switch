@@ -1,6 +1,6 @@
 import AppKit
 import Foundation
-import GhAccSwitchCore
+import GitAccountSwitchCore
 import ServiceManagement
 
 @MainActor
@@ -24,6 +24,8 @@ final class AppState: ObservableObject {
             attempt { try Writer.linkCLI(executable: exe, paths: paths) }
         }
         attempt { try Writer.apply(config, paths: paths) }
+        if shell.isInLegacyLocation { attempt { try shell.install() } }
+        enableShellForFolderRules()
         refresh()
         // Cheap local file reads: picks up `gh auth switch` and `gh-acc-switch switch` run from a terminal.
         timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in
@@ -120,6 +122,8 @@ final class AppState: ObservableObject {
             updated.rules.append(FolderRule(path: normalized, accountId: accountId))
         }
         save(updated)
+        enableShellForFolderRules()
+        refresh()
     }
 
     func setRule(_ rule: FolderRule, accountId: UUID) {
@@ -151,7 +155,17 @@ final class AppState: ObservableObject {
 
     func setShellIntegration(_ on: Bool) {
         attempt { on ? try shell.install() : try shell.uninstall() }
+        var updated = config
+        updated.shellIntegrationDisabled = on ? nil : true
+        save(updated)
         refresh()
+    }
+
+    /// Folder rules only reach `gh` through the shell wrapper, so turn it on with the first rule
+    /// unless the user switched it off.
+    private func enableShellForFolderRules() {
+        guard !config.rules.isEmpty, config.shellIntegrationDisabled != true, !shell.isInstalled else { return }
+        attempt { try shell.install() }
     }
 
     func afterLogin() {

@@ -19,6 +19,9 @@ public struct Paths {
     public var cliLink: URL { binDir.appendingPathComponent("gh-acc-switch") }
 
     public var globalGitconfig: URL { home.appendingPathComponent(".gitconfig") }
+    /// Read by every zsh, interactive or not, so the gh wrapper also reaches scripts, IDE tasks and agents.
+    public var zshenv: URL { home.appendingPathComponent(".zshenv") }
+    /// Where the shell integration used to live; only read to move it to ~/.zshenv.
     public var zshrc: URL { home.appendingPathComponent(".zshrc") }
 
     public var ghHostsFile: URL {

@@ -91,7 +91,7 @@ public struct GitIntegration {
     }
 }
 
-/// Sources init.sh from ~/.zshrc so `gh` picks the folder's account.
+/// Sources init.sh from ~/.zshenv so `gh` picks the folder's account in every zsh, not just terminal tabs.
 public struct ShellIntegration {
     public static let marker = "# gh-acc-switch"
     public let paths: Paths
@@ -103,22 +103,33 @@ public struct ShellIntegration {
         return "[ -f \"\(p)\" ] && source \"\(p)\"  \(Self.marker)"
     }
 
-    public var isInstalled: Bool {
-        ((try? String(contentsOf: paths.zshrc, encoding: .utf8)) ?? "").contains(Self.marker)
-    }
+    public var isInstalled: Bool { Self.hasMarker(paths.zshenv) }
+
+    /// Installed by an older version, which only reached interactive shells.
+    public var isInLegacyLocation: Bool { Self.hasMarker(paths.zshrc) }
 
     public func install() throws {
+        if isInLegacyLocation { try Self.removeMarker(from: paths.zshrc) }
         guard !isInstalled else { return }
-        var text = (try? String(contentsOf: paths.zshrc, encoding: .utf8)) ?? ""
+        var text = (try? String(contentsOf: paths.zshenv, encoding: .utf8)) ?? ""
         if !text.isEmpty && !text.hasSuffix("\n") { text += "\n" }
         text += "\n" + sourceLine + "\n"
-        try text.write(to: paths.zshrc, atomically: true, encoding: .utf8)
+        try text.write(to: paths.zshenv, atomically: true, encoding: .utf8)
     }
 
     public func uninstall() throws {
-        guard let text = try? String(contentsOf: paths.zshrc, encoding: .utf8) else { return }
-        let kept = text.components(separatedBy: "\n").filter { !$0.contains(Self.marker) }
-        try kept.joined(separator: "\n").write(to: paths.zshrc, atomically: true, encoding: .utf8)
+        try Self.removeMarker(from: paths.zshenv)
+        try Self.removeMarker(from: paths.zshrc)
+    }
+
+    private static func hasMarker(_ file: URL) -> Bool {
+        ((try? String(contentsOf: file, encoding: .utf8)) ?? "").contains(marker)
+    }
+
+    private static func removeMarker(from file: URL) throws {
+        guard let text = try? String(contentsOf: file, encoding: .utf8), text.contains(marker) else { return }
+        let kept = text.components(separatedBy: "\n").filter { !$0.contains(marker) }
+        try kept.joined(separator: "\n").write(to: file, atomically: true, encoding: .utf8)
     }
 
     /// Wraps `gh` so it uses the folder's account (via GH_TOKEN) when that differs from the global one.

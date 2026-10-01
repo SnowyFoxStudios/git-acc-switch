@@ -1,5 +1,5 @@
 import AppKit
-import GhAccSwitchCore
+import GitAccountSwitchCore
 import SwiftUI
 
 struct ManageView: View {
@@ -278,7 +278,7 @@ private struct FoldersTab: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Repos inside these folders commit and push as the chosen account, whatever the global account is. Nested folders override their parents.")
+            Text("Repos inside these folders commit and push as the chosen account, and `gh` runs as it, whatever the global account is. Nested folders override their parents.")
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
@@ -375,8 +375,8 @@ private struct SetupTab: View {
             }
 
             Section("Shell (gh commands per folder)") {
-                LabeledContent("Status", value: state.shellInstalled ? "Installed in ~/.zshrc" : "Not installed")
-                Text("Adds one line to ~/.zshrc that wraps `gh`, so inside a folder with a rule it runs as that folder's account. It also puts the `gh-acc-switch` command on your PATH. Open a new terminal tab afterwards.")
+                LabeledContent("Status", value: state.shellInstalled ? "Installed in ~/.zshenv" : "Not installed")
+                Text("Adds one line to ~/.zshenv that wraps `gh`, so inside a folder with a rule it runs as that folder's account. ~/.zshenv is read by every zsh, so this also covers scripts, IDE tasks and coding agents, not just terminal tabs. It also puts the `gh-acc-switch` command on your PATH. It turns on by itself when you add a folder; open a new terminal tab afterwards.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

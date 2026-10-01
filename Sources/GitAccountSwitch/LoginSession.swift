@@ -1,6 +1,6 @@
 import AppKit
 import Foundation
-import GhAccSwitchCore
+import GitAccountSwitchCore
 
 /// Runs `gh auth login --web` in the background: shows the one-time code, copies it,
 /// opens the browser, and waits for the user to approve. The token lands in gh's keychain.

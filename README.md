@@ -1,11 +1,11 @@
-# gh-acc-switch
+# GitAccountSwitch
 
 A macOS menu bar app for switching between GitHub accounts, for `git` and `gh` alike, with per-folder overrides.
 
 - **Log in once per account.** It uses `gh auth login` in the browser, and tokens stay in gh's keychain storage.
 - **Switch from the menu bar.** Switching runs `gh auth switch` and changes the global git commit name and email.
 - **Per-folder accounts.** Every repo inside a folder commits *and pushes* as the account you assign to it, whatever the global account is. Nested folders override their parents.
-- **`gh` per folder.** An optional shell wrapper makes `gh pr create` etc. use the folder's account too.
+- **`gh` per folder.** A shell wrapper makes `gh pr create` etc. use the folder's account too. It turns on with your first folder rule.
 
 ## Build & install
 
@@ -19,9 +19,8 @@ Then click the menu bar item → **Manage Accounts & Folders…**:
 
 1. **Accounts**: add accounts. You can import logins `gh` already has, or **Sign in with Browser**. The one-time code is copied to your clipboard and the device page opens. Then set the label, commit name and commit email. The email defaults to GitHub's noreply address.
 2. **Setup → Install Git Integration**: makes the app's identity and folder rules take effect. It backs up `~/.gitconfig` first.
-3. **Folders → Add Folder…**: pick a folder and an account.
-4. Optionally, **Setup → Enable shell integration**, so that `gh` follows folder rules. Open a new terminal tab afterwards.
-5. Optionally, **Setup → Launch at login**.
+3. **Folders → Add Folder…**: pick a folder and an account. This also turns on the shell integration, so `gh` follows folder rules (turn it off under **Setup** if you don't want it). Open a new terminal tab afterwards.
+4. Optionally, **Setup → Launch at login**.
 
 ## How it works
 
@@ -36,7 +35,7 @@ Then click the menu bar item → **Manage Accounts & Folders…**:
                              credential helper for github.com / gist.github.com
                              [includeIf "gitdir/i:<folder>/"] → accounts/<id>.gitconfig
   accounts/<id>.gitconfig    [user] + ghswitch.folderUser for that account
-  init.sh                    gh() wrapper, sourced from ~/.zshrc
+  init.sh                    gh() wrapper, sourced from ~/.zshenv
   bin/gh-acc-switch          symlink to the app binary (CLI + credential helper)
 ```
 
@@ -46,7 +45,7 @@ Then click the menu bar item → **Manage Accounts & Folders…**:
 2. the folder rule (`ghswitch.folderUser`, set by the includeIf),
 3. the global account.
 
-**Shell wrapper:** inside a folder whose account differs from the global one, `gh` runs with `GH_TOKEN` set to that account's token. `gh auth …` is never wrapped.
+**Shell wrapper:** inside a folder whose account differs from the global one, `gh` runs with `GH_TOKEN` set to that account's token. `gh auth …` is never wrapped. It's sourced from `~/.zshenv` rather than `~/.zshrc`, so non-interactive zsh (scripts, IDE tasks, coding agents) gets it too. Bash and other shells don't.
 
 The app watches gh's `hosts.yml`, so running `gh auth switch` in a terminal updates the menu bar and the global git identity.
 
@@ -68,6 +67,7 @@ gh-acc-switch switch Work     # by label or GitHub login
 
 ```bash
 swift build && swift test
-.build/debug/GhAccSwitch          # run the app unbundled
-.build/debug/GhAccSwitch status   # run as CLI
+.build/debug/GitAccountSwitch          # run the app unbundled
+.build/debug/GitAccountSwitch status   # run as CLI
+swift scripts/make-icon.swift     # regenerate Resources/AppIcon.icns
 ```

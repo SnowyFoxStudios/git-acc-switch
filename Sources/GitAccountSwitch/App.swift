@@ -1,8 +1,8 @@
 import AppKit
-import GhAccSwitchCore
+import GitAccountSwitchCore
 import SwiftUI
 
-struct GhAccSwitchApp: App {
+struct GitAccountSwitchApp: App {
     @StateObject private var state = AppState()
 
     var body: some Scene {
