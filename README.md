@@ -7,7 +7,12 @@ A macOS menu bar app for switching between GitHub accounts, for `git` and `gh` a
 - **Per-folder accounts.** Every repo inside a folder commits *and pushes* as the account you assign to it, whatever the global account is. Nested folders override their parents.
 - **`gh` per folder.** A shell wrapper makes `gh pr create` etc. use the folder's account too. It turns on with your first folder rule.
 
+## Download
+
+Get the latest zip from [Releases](https://github.com/SnowyFoxStudios/git-acc-switch/releases), unzip it and move **GitAccountSwitch.app** to Applications. It isn't notarized yet, so open it the first time with right-click → **Open**. You also need `gh` (`brew install gh`).
+
 ## Build & install
+
 
 Requires macOS 14+, Xcode command line tools and `gh` (`brew install gh`).
 
@@ -71,6 +76,16 @@ swift build
 .build/debug/GitAccountSwitch status   # run as CLI
 swift scripts/make-icon.swift     # regenerate Resources/AppIcon.icns
 ```
+
+## Releasing
+
+Every push and pull request is built on GitHub's macOS runners (`.github/workflows/build.yml`), and the zipped app is attached to the run. To publish a release, tag a commit on `main`:
+
+```bash
+git tag v0.1.0 && git push origin v0.1.0
+```
+
+The workflow writes the tag's version into the app, then creates the GitHub Release with `GitAccountSwitch-<version>.zip` and its SHA-256 checksum.
 
 ## License
 

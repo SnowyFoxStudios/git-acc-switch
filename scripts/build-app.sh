@@ -1,5 +1,6 @@
 #!/bin/bash
 # Builds GitAccountSwitch.app into ./build. With --install, copies it to ~/Applications and launches it.
+# Optional env: VERSION (e.g. 0.1.0) and BUILD_NUMBER override the ones in Resources/Info.plist.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -11,6 +12,9 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/GitAccountSwitch"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
+# CI passes the release version (from the tag) and build number; local builds keep Info.plist's.
+[[ -n "${VERSION:-}" ]] && /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$APP/Contents/Info.plist"
+[[ -n "${BUILD_NUMBER:-}" ]] && /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" "$APP/Contents/Info.plist"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 codesign --force --sign - "$APP"
 echo "Built $APP"
