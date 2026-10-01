@@ -66,7 +66,7 @@ gh-acc-switch switch Work     # by label or GitHub login
 ## Development
 
 ```bash
-swift build && swift test
+swift build
 .build/debug/GitAccountSwitch          # run the app unbundled
 .build/debug/GitAccountSwitch status   # run as CLI
 swift scripts/make-icon.swift     # regenerate Resources/AppIcon.icns
