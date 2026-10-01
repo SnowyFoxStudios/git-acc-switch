@@ -9,7 +9,7 @@ A macOS menu bar app for switching between GitHub accounts, for `git` and `gh` a
 
 ## Download
 
-Get the latest zip from [Releases](https://github.com/SnowyFoxStudios/git-acc-switch/releases), unzip it and move **GitAccountSwitch.app** to Applications. It isn't notarized yet, so open it the first time with right-click → **Open**. You also need `gh` (`brew install gh`).
+Get the latest zip from [Releases](https://github.com/SnowyFoxStudios/git-acc-switch/releases), unzip it and move **GitAccountSwitch.app** to Applications. It isn't notarized yet, so the first launch shows *"GitAccountSwitch" Not Opened*: click **Done**, then **System Settings → Privacy & Security → Open Anyway** (or run `xattr -dr com.apple.quarantine /Applications/GitAccountSwitch.app`). You also need `gh` (`brew install gh`).
 
 ## Build & install
 
